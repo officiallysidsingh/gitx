@@ -11,25 +11,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var msg string
+
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
-	Use:   "commit [commit-message]",
+	Use:   "commit",
 	Short: "To Add, Commit And Push Code To Origin's Main Branch",
 	Long: `Use this command to add all files of repo to staging area,
 commit them and push them to the origin's main branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			cmd.Help()
-			return
-		}
-
-		// If argument exist
-		msg := args[0]
-		push(msg)
+		push()
 	},
 }
 
-func push(msg string) {
+func push() {
 	commands := []*exec.Cmd{
 		exec.Command("git", "add", "."),
 		exec.Command("git", "commit", "-m", msg),
@@ -52,4 +47,11 @@ func push(msg string) {
 
 func init() {
 	rootCmd.AddCommand(commitCmd)
+	
+	commitCmd.Flags().StringVarP(&msg, "msg", "m", "", "commit message")
+
+	err := commitCmd.MarkFlagRequired("msg")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
